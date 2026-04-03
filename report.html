@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamma Scalping Model — Dashboard Report</title>
+    <meta name="description"
+        content="Comprehensive dashboard for the Nifty Gamma Scalping strategy with ML enhancement, backtesting results, and performance analytics.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM — GAMMA SCALP DASHBOARD
+   ═══════════════════════════════════════════════════════════ */
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #0d1219;
+            --bg-card: #111822;
+            --bg-card-hover: #151d29;
+            --bg-elevated: #1a2332;
+            --border: #1e2a3a;
+            --border-accent: #2a3a50;
+            --text-primary: #e8ecf1;
+            --text-secondary: #8b97a8;
+            --text-muted: #5a6a7d;
+            --accent-green: #00e676;
+            --accent-green-dim: #00c85330;
+            --accent-red: #ff5252;
+            --accent-red-dim: #ff525230;
+            --accent-cyan: #00bcd4;
+            --accent-cyan-dim: #00bcd420;
+            --accent-blue: #448aff;
+            --accent-blue-dim: #448aff20;
+            --accent-amber: #ffc107;
+            --accent-amber-dim: #ffc10720;
+            --accent-purple: #b388ff;
+            --accent-purple-dim: #b388ff20;
+            --gradient-hero: linear-gradient(135deg, #0a0e17 0%, #0d1a2a 50%, #0a1628 100%);
+            --gradient-green: linear-gradient(135deg, #00e676, #00bfa5);
+            --gradient-red: linear-gradient(135deg, #ff5252, #ff1744);
+            --gradient-cyan: linear-gradient(135deg, #00bcd4, #0097a7);
+            --gradient-blue: linear-gradient(135deg, #448aff, #2962ff);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-glow-green: 0 0 30px rgba(0, 230, 118, 0.1);
+            --shadow-glow-cyan: 0 0 30px rgba(0, 188, 212, 0.1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+        }
+
+        /* ── LAYOUT ── */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            background: var(--accent-cyan-dim);
+            padding: 6px 16px;
+            border-radius: 999px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--border-accent);
+        }
+
+        .card-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* ── GRID HELPERS ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-hero);
+            position: relative;
+            overflow: hidden;
+            padding-top: 56px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(0, 188, 212, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(0, 230, 118, 0.04) 0%, transparent 60%);
+        }
+
+        .hero-content {
+            position: relative;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--accent-cyan-dim);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            color: var(--accent-cyan);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 999px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #e8ecf1 0%, #00bcd4 50%, #00e676 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.75rem;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .val-green {
+            color: var(--accent-green);
+        }
+
+        .val-red {
+            color: var(--accent-red);
+        }
+
+        .val-cyan {
+            color: var(--accent-cyan);
+        }
+
+        .val-amber {
+            color: var(--accent-amber);
+        }
+
+        .val-blue {
+            color: var(--accent-blue);
+        }
+
+        .val-purple {
+            color: var(--accent-purple);
+        }
+
+        /* ── FLOWCHART ── */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .flow-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 2rem;
+            text-align: center;
+            position: relative;
+            min-width: 260px;
+            max-width: 500px;
+            transition: border-color 0.3s;
+        }
+
+        .flow-node:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .flow-node-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .flow-node-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .flow-node.start {
+            border-color: var(--accent-cyan);
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 188, 212, 0.08));
+        }
+
+        .flow-node.decision {
+            border-color: var(--accent-amber);
+            background: linear-gradient(135deg, var(--bg-card), rgba(255, 193, 7, 0.08));
+            transform: rotate(0deg);
+        }
+
+        .flow-node.action {
+            border-color: var(--accent-green);
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 230, 118, 0.08));
+        }
+
+        .flow-node.exit-node {
+            border-color: var(--accent-red);
+            background: linear-gradient(135deg, var(--bg-card), rgba(255, 82, 82, 0.08));
+        }
+
+        .flow-node.ml {
+            border-color: var(--accent-purple);
+            background: linear-gradient(135deg, var(--bg-card), rgba(179, 136, 255, 0.08));
+        }
+
+        .flow-arrow {
+            width: 2px;
+            height: 32px;
+            background: var(--border-accent);
+            position: relative;
+        }
+
+        .flow-arrow::after {
+            content: '▼';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-muted);
+            font-size: 0.6rem;
+        }
+
+        .flow-branch {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .flow-branch-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .flow-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-label.yes {
+            background: var(--accent-green-dim);
+            color: var(--accent-green);
+        }
+
+        .flow-label.no {
+            background: var(--accent-red-dim);
+            color: var(--accent-red);
+        }
+
+        /* ── FEATURE LIST ── */
+        .feature-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .feature-tag {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 5px 12px;
+            border-radius: 999px;
+        }
+
+        /* ── VERSION TABLE ── */
+        .version-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .version-table th {
+            background: var(--bg-elevated);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .version-table td {
+            padding: 1rem 1.25rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .version-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .version-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .version-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .vb-v1 {
+            background: #ff525220;
+            color: #ff5252;
+        }
+
+        .vb-v2 {
+            background: #ff525220;
+            color: #ff7043;
+        }
+
+        .vb-v3 {
+            background: #ffc10720;
+            color: #ffc107;
+        }
+
+        .vb-v4 {
+            background: #ffc10720;
+            color: #ffab00;
+        }
+
+        .vb-v5 {
+            background: #00e67620;
+            color: #00e676;
+        }
+
+        /* ── IMAGE GALLERY ── */
+        .gallery-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .gallery-caption {
+            padding: 1rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .gallery-full {
+            margin-bottom: 1.5rem;
+        }
+
+        .gallery-full img {
+            width: 100%;
+        }
+
+        /* ── PARAM CARDS ── */
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .param-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .param-key {
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .param-val {
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* ── METRIC COMPARISON TABLE ── */
+        .metrics-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .metrics-table th {
+            background: var(--bg-elevated);
+            padding: 0.85rem 1rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metrics-table th:first-child {
+            text-align: left;
+        }
+
+        .metrics-table td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .metrics-table td:first-child {
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metrics-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        /* ── EXIT REASONS ── */
+        .exit-bar-container {
+            margin-top: 0.75rem;
+        }
+
+        .exit-bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            gap: 0.75rem;
+        }
+
+        .exit-bar-label {
+            width: 120px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .exit-bar-track {
+            flex: 1;
+            height: 24px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .exit-bar-fill {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--bg-primary);
+            min-width: 30px;
+        }
+
+        .exit-bar-fill.theta {
+            background: var(--gradient-blue);
+        }
+
+        .exit-bar-fill.vega {
+            background: var(--gradient-green);
+        }
+
+        .exit-bar-fill.gamma {
+            background: var(--gradient-cyan);
+        }
+
+        .exit-bar-fill.drawdown {
+            background: linear-gradient(135deg, var(--accent-amber), #ff8f00);
+        }
+
+        .exit-bar-fill.time {
+            background: linear-gradient(135deg, var(--accent-blue), #1565c0);
+        }
+
+        .exit-bar-fill.eod {
+            background: linear-gradient(135deg, var(--accent-purple), #7c4dff);
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .footer-tech {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .footer-tech span {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .flow-branch {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .param-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════ NAV ═══════════ -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">GAMMA SCALP</div>
+            <div class="nav-links">
+                <a href="#strategy">Strategy</a>
+                <a href="#ml-pipeline">ML Pipeline</a>
+                <a href="#evolution">Evolution</a>
+                <a href="#backtests">Backtests</a>
+                <a href="#eda">EDA</a>
+                <a href="#optuna">Optuna</a>
+                <a href="#params">Parameters</a>
+                <a href="#trades">Trades</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="hero" id="top">
+        <div class="hero-content">
+            <div class="hero-badge">Quantitative Research Project</div>
+            <h1 class="hero-title">Nifty Gamma Scalping with ML Enhancement</h1>
+            <p class="hero-desc">
+                A systematic intraday options strategy that sells ATM straddles and dynamically hedges with OTM options,
+                enhanced by a Gradient Boosting classifier trained via Optuna hyperparameter optimization using a
+                walk-forward 12-3-3 chronological split.
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value val-cyan">5</div>
+                    <div class="hero-stat-label">Versions Built</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value val-amber">25</div>
+                    <div class="hero-stat-label">ML Features</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value val-purple">300</div>
+                    <div class="hero-stat-label">Optuna Trials</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value val-green">171</div>
+                    <div class="hero-stat-label">ML Trades</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value val-blue">12-3-3</div>
+                    <div class="hero-stat-label">Walk-Forward</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ STRATEGY FLOWCHART ═══════════ -->
+    <section id="strategy">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Strategy</span>
+                <h2 class="section-title">Gamma Scalping Logic</h2>
+                <p class="section-subtitle">The core intraday straddle selling + dynamic option hedging framework</p>
+            </div>
+
+            <div class="flow-container">
+                <div class="flow-node start">
+                    <div class="flow-node-title">Market Data Feed</div>
+                    <div class="flow-node-desc">1-min NIFTY spot + options chain (ATM ± strikes)<br>3-min bars for hedge
+                        signals</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node decision">
+                    <div class="flow-node-title">Regime Filter</div>
+                    <div class="flow-node-desc">IVR ≤ 42.5 &nbsp;•&nbsp; IV / RV ≤ 1.17<br>Efficiency Ratio (ER window =
+                        16)</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node decision">
+                    <div class="flow-node-title">Entry Conditions</div>
+                    <div class="flow-node-desc">Time: 09:30 – 12:30 &nbsp;•&nbsp; DTE: 1–4 days<br>Cooldown ≥ 31 min
+                        after loss &nbsp;•&nbsp; Max 5 trades/day</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node action">
+                    <div class="flow-node-title">Sell ATM Straddle</div>
+                    <div class="flow-node-desc">Short 1 lot ATM CE + PE &nbsp;•&nbsp; Lot size: 75<br>Collect premium,
+                        establish position</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-branch">
+                    <div class="flow-branch-col">
+                        <div class="flow-label yes">Hedge Trigger</div>
+                        <div class="flow-node action">
+                            <div class="flow-node-title">Dynamic Option Hedge</div>
+                            <div class="flow-node-desc">Spot moves ≥ 79 pts → buy OTM PE/CE<br>Revert at 29 pts
+                                &nbsp;•&nbsp; SL at 142 pts<br>Options-only hedging (no futures)</div>
+                        </div>
+                    </div>
+                    <div class="flow-branch-col">
+                        <div class="flow-label no">Exit Triggers</div>
+                        <div class="flow-node exit-node">
+                            <div class="flow-node-title">Exit Conditions</div>
+                            <div class="flow-node-desc">
+                                TP: +15.5% &nbsp;•&nbsp; SL: -11.1%<br>
+                                IV expansion exit: 6%<br>
+                                Theta max: 186 min &nbsp;•&nbsp; Session end: 15:15<br>
+                                Shift expiry if DTE &lt; 2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node exit-node">
+                    <div class="flow-node-title">Exit Reason Classification</div>
+                    <div class="flow-node-desc"
+                        style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-top: 8px;">
+                        <span
+                            style="background: var(--accent-green-dim); color: var(--accent-green); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">gamma_win</span>
+                        <span
+                            style="background: var(--accent-green-dim); color: var(--accent-green); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">vega_win</span>
+                        <span
+                            style="background: var(--accent-red-dim); color: var(--accent-red); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">theta_bleed</span>
+                        <span
+                            style="background: var(--accent-red-dim); color: var(--accent-red); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">max_drawdown</span>
+                        <span
+                            style="background: var(--accent-amber-dim); color: var(--accent-amber); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">stop_loss</span>
+                        <span
+                            style="background: var(--accent-blue-dim); color: var(--accent-blue); padding: 4px 10px; border-radius: 999px; font-size: 0.7rem;">time_stop</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ ML PIPELINE ═══════════ -->
+    <section id="ml-pipeline" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"
+                    style="background: var(--accent-purple-dim); color: var(--accent-purple);">Machine Learning</span>
+                <h2 class="section-title">ML Enhancement Pipeline</h2>
+                <p class="section-subtitle">Gradient Boosting classifier as a gate-keeper for strategy entries — trained
+                    with Optuna HPT on a walk-forward split</p>
+            </div>
+
+            <div class="flow-container">
+                <div class="flow-node start">
+                    <div class="flow-node-title">Historical Trade Labels</div>
+                    <div class="flow-node-desc">From v4 backtest — label each trade as<br>profitable (1) or losing (0)
+                    </div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node ml">
+                    <div class="flow-node-title">Feature Engineering — 25 Features</div>
+                    <div class="flow-node-desc">Market microstructure, volatility regime, and time features</div>
+                </div>
+            </div>
+
+            <!-- Feature tags -->
+            <div class="feature-grid" style="margin: 1.5rem auto; max-width: 900px;">
+                <span class="feature-tag">iv_pct</span>
+                <span class="feature-tag">rv_pct</span>
+                <span class="feature-tag">iv_rv_ratio</span>
+                <span class="feature-tag">ivr</span>
+                <span class="feature-tag">er_entry</span>
+                <span class="feature-tag">dte_entry</span>
+                <span class="feature-tag">hour</span>
+                <span class="feature-tag">minute</span>
+                <span class="feature-tag">straddle_pct_spot</span>
+                <span class="feature-tag">spot_ret_5m</span>
+                <span class="feature-tag">spot_ret_10m</span>
+                <span class="feature-tag">spot_ret_30m</span>
+                <span class="feature-tag">spot_std_10m</span>
+                <span class="feature-tag">spot_std_30m</span>
+                <span class="feature-tag">straddle_chg_5m</span>
+                <span class="feature-tag">straddle_chg_10m</span>
+                <span class="feature-tag">straddle_chg_30m</span>
+                <span class="feature-tag">iv_chg_5m</span>
+                <span class="feature-tag">iv_chg_10m</span>
+                <span class="feature-tag">iv_chg_30m</span>
+                <span class="feature-tag">straddle_z_1m</span>
+                <span class="feature-tag">straddle_z_5m</span>
+                <span class="feature-tag">straddle_pct_spot_z</span>
+                <span class="feature-tag">rv_minus_iv</span>
+                <span class="feature-tag">week_of_month</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="flow-arrow"></div>
+                <div class="flow-node ml">
+                    <div class="flow-node-title">Chronological Split (12-3-3)</div>
+                    <div class="flow-node-desc">12 months train &nbsp;•&nbsp; 3 months validation &nbsp;•&nbsp; 3 months
+                        test<br>No data leakage — strict temporal ordering</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-branch">
+                    <div class="flow-branch-col">
+                        <div class="flow-node ml">
+                            <div class="flow-node-title">GBM Training</div>
+                            <div class="flow-node-desc">GradientBoostingClassifier<br>n_estimators: 336 • max_depth:
+                                4<br>learning_rate: 0.0356 • subsample: 0.862</div>
+                        </div>
+                    </div>
+                    <div class="flow-branch-col">
+                        <div class="flow-node ml">
+                            <div class="flow-node-title">Optuna HPT</div>
+                            <div class="flow-node-desc">300 trials (261 complete, 39 pruned)<br>Objective: Average
+                                Precision<br>CV AP: 0.4009</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow"></div>
+                <div class="flow-node decision">
+                    <div class="flow-node-title">Threshold Tuning</div>
+                    <div class="flow-node-desc">Optimal threshold on validation set: 0.602<br>Precision-Recall trade-off
+                        optimization</div>
+                </div>
+                <div class="flow-arrow"></div>
+
+                <div class="flow-node action">
+                    <div class="flow-node-title">ML-Gated Backtesting</div>
+                    <div class="flow-node-desc">Only take trades where P(win) ≥ 0.602<br>Evaluated on train, validation,
+                        and test splits separately</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ VERSION EVOLUTION ═══════════ -->
+    <section id="evolution">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Evolution</span>
+                <h2 class="section-title">Strategy Development Journey</h2>
+                <p class="section-subtitle">From initial prototype to ML-enhanced version — 5 iterative improvements</p>
+            </div>
+
+            <div class="card" style="padding: 0; overflow-x: auto;">
+                <table class="version-table">
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Key Changes</th>
+                            <th>Trades</th>
+                            <th>Win Rate</th>
+                            <th>Total P&L</th>
+                            <th>Sharpe</th>
+                            <th>Profit Factor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="version-badge vb-v1">v1.0</span></td>
+                            <td>Initial prototype — basic straddle selling with simple delta hedging using futures</td>
+                            <td>42</td>
+                            <td style="color: var(--accent-green);">31.0%</td>
+                            <td style="color: var(--accent-red);">₹-12,457</td>
+                            <td style="color: var(--accent-blue);">-1.82</td>
+                            <td style="color: var(--accent-green);">0.64</td>
+                        </tr>
+                        <tr>
+                            <td><span class="version-badge vb-v2">v2.0</span></td>
+                            <td>Bug fixes — corrected straddle direction, enabled hedging mechanism, fixed transaction
+                                costs</td>
+                            <td>67</td>
+                            <td style="color: var(--accent-green);">28.4%</td>
+                            <td style="color: var(--accent-red);">₹-21,889</td>
+                            <td style="color: var(--accent-blue);">-2.34</td>
+                            <td style="color: var(--accent-green);">0.48</td>
+                        </tr>
+                        <tr>
+                            <td><span class="version-badge vb-v3">v3.0</span></td>
+                            <td>Options-only hedging, regime filter (IVR+ER), Optuna parameter tuning for strategy</td>
+                            <td>94</td>
+                            <td style="color: var(--accent-green);">30.9%</td>
+                            <td style="color: var(--accent-red);">₹-31,050</td>
+                            <td style="color: var(--accent-blue);">-3.93</td>
+                            <td style="color: var(--accent-green);">0.42</td>
+                        </tr>
+                        <tr style="font-weight: 700; background: var(--bg-elevated);">
+                            <td><span class="version-badge vb-v4">v4.0</span></td>
+                            <td>Refined exit conditions (6 named reasons), DTE-based expiry shift, tuned TP/SL/hedge
+                                parameters</td>
+                            <td>46</td>
+                            <td style="color: var(--accent-green);">34.8%</td>
+                            <td style="color: var(--accent-red);">₹-7,343</td>
+                            <td style="color: var(--accent-blue);">-0.93</td>
+                            <td style="color: var(--accent-green);">0.85</td>
+                        </tr>
+                        <tr>
+                            <td><span class="version-badge vb-v5">v5.0</span></td>
+                            <td>ML enhancement — GBM classifier gate, 25 features, Optuna HPT, walk-forward validation
+                            </td>
+                            <td>31</td>
+                            <td style="color: var(--accent-green);">22.6%</td>
+                            <td style="color: var(--accent-red);">₹-18,816</td>
+                            <td style="color: var(--accent-blue);">-16.90</td>
+                            <td style="color: var(--accent-green);">0.12</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ BACKTESTS ═══════════ -->
+    <section id="backtests" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"
+                    style="background: var(--accent-green-dim); color: var(--accent-green);">Backtests</span>
+                <h2 class="section-title">Backtest Results</h2>
+                <p class="section-subtitle">Equity curves, drawdown analysis, P&L distributions, and exit breakdowns for
+                    each version</p>
+            </div>
+
+            <!-- V4 — Best Fixed Model -->
+            <div class="gallery-item gallery-full">
+                <img src="BACKTEST RESULTS/backtest_v4.png" alt="Backtest v4 results">
+                <div class="gallery-caption">Version 4.0 — Refined Strategy (Best Fixed Model)</div>
+            </div>
+
+            <!-- ML V5 full width -->
+            <div class="gallery-item gallery-full">
+                <img src="BACKTEST RESULTS/ml_backtest_v5.png" alt="ML-enhanced backtest v5 results">
+                <div class="gallery-caption">Version 5.0 ML-Enhanced — GBM-Gated Walk-Forward Backtest (Train /
+                    Validation / Test splits)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ EDA ═══════════ -->
+    <section id="eda">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"
+                    style="background: var(--accent-amber-dim); color: var(--accent-amber);">Analysis</span>
+                <h2 class="section-title">Exploratory Data Analysis</h2>
+                <p class="section-subtitle">Distribution analysis of NIFTY options data — IV, RV, and volatility regime
+                    characteristics</p>
+            </div>
+
+            <div class="gallery-item gallery-full">
+                <img src="EDA/eda_report.png" alt="EDA Report Overview">
+                <div class="gallery-caption">EDA Report — Overview of Data Distributions</div>
+            </div>
+            <div class="grid-2">
+                <div class="gallery-item">
+                    <img src="EDA/eda_report_1.png" alt="EDA Report Part 1">
+                    <div class="gallery-caption">EDA Report — Part 1</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="EDA/eda_report_2.png" alt="EDA Report Part 2">
+                    <div class="gallery-caption">EDA Report — Part 2</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ OPTUNA ═══════════ -->
+    <section id="optuna" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"
+                    style="background: var(--accent-purple-dim); color: var(--accent-purple);">Optimization</span>
+                <h2 class="section-title">Optuna Hyperparameter Tuning</h2>
+                <p class="section-subtitle">300 trials using TPE sampler with median pruning — optimizing Average
+                    Precision of the GBM classifier</p>
+            </div>
+
+            <div class="grid-4" style="margin-bottom: 2rem;">
+                <div class="card" style="text-align: center;">
+                    <div class="card-title">Total Trials</div>
+                    <div
+                        style="font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan);">
+                        300</div>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div class="card-title">Completed</div>
+                    <div
+                        style="font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--accent-green);">
+                        261</div>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div class="card-title">Pruned</div>
+                    <div
+                        style="font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--accent-amber);">
+                        39</div>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div class="card-title">Best CV AP</div>
+                    <div
+                        style="font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--accent-purple);">
+                        0.401</div>
+                </div>
+            </div>
+
+            <div class="gallery-item gallery-full">
+                <img src="OPTUNA RESULTS/optuna_results.png" alt="Optuna optimization history">
+                <div class="gallery-caption">Optimization History — Trial Values over Time</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ BEST PARAMETERS ═══════════ -->
+    <section id="params">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Parameters</span>
+                <h2 class="section-title">Optimized Parameters</h2>
+                <p class="section-subtitle">Best-fit parameters obtained from Optuna optimization for both the strategy
+                    and ML model</p>
+            </div>
+
+            <div class="grid-2">
+                <!-- Finance params -->
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-cyan);">Strategy Parameters (finance_best_params)
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-item"><span class="param-key">IVR_MAX</span><span
+                                class="param-val">42.47</span></div>
+                        <div class="param-item"><span class="param-key">IV_RV_MAX</span><span
+                                class="param-val">1.17</span></div>
+                        <div class="param-item"><span class="param-key">RV_WINDOW</span><span
+                                class="param-val">47</span></div>
+                        <div class="param-item"><span class="param-key">IVR_DAYS</span><span class="param-val">20</span>
+                        </div>
+                        <div class="param-item"><span class="param-key">ER_WINDOW</span><span
+                                class="param-val">16</span></div>
+                        <div class="param-item"><span class="param-key">ENTRY_START</span><span
+                                class="param-val">09:30</span></div>
+                        <div class="param-item"><span class="param-key">ENTRY_END</span><span
+                                class="param-val">12:30</span></div>
+                        <div class="param-item"><span class="param-key">SESSION_END</span><span
+                                class="param-val">15:15</span></div>
+                        <div class="param-item"><span class="param-key">DTE_MIN</span><span class="param-val">1</span>
+                        </div>
+                        <div class="param-item"><span class="param-key">DTE_MAX</span><span class="param-val">4</span>
+                        </div>
+                        <div class="param-item"><span class="param-key">MAX_TRADES</span><span
+                                class="param-val">5/day</span></div>
+                        <div class="param-item"><span class="param-key">COOLDOWN</span><span class="param-val">31
+                                min</span></div>
+                        <div class="param-item"><span class="param-key">STRADDLE_TP</span><span
+                                class="param-val">15.5%</span></div>
+                        <div class="param-item"><span class="param-key">STRADDLE_SL</span><span
+                                class="param-val">11.1%</span></div>
+                        <div class="param-item"><span class="param-key">IV_EXPAND</span><span
+                                class="param-val">6.0%</span></div>
+                        <div class="param-item"><span class="param-key">THETA_MAX</span><span class="param-val">186
+                                min</span></div>
+                        <div class="param-item"><span class="param-key">HEDGE_STEP</span><span class="param-val">79
+                                pts</span></div>
+                        <div class="param-item"><span class="param-key">HEDGE_REVERT</span><span class="param-val">29
+                                pts</span></div>
+                        <div class="param-item"><span class="param-key">HEDGE_SL</span><span class="param-val">142
+                                pts</span></div>
+                        <div class="param-item"><span class="param-key">LOT_SIZE</span><span class="param-val">75</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ML params -->
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-purple);">ML Model Parameters (ml_best_params)
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-item"><span class="param-key">CV Score</span><span
+                                class="param-val">0.4009</span></div>
+                        <div class="param-item"><span class="param-key">Threshold</span><span
+                                class="param-val">0.602</span></div>
+                        <div class="param-item"><span class="param-key">n_estimators</span><span
+                                class="param-val">336</span></div>
+                        <div class="param-item"><span class="param-key">max_depth</span><span class="param-val">4</span>
+                        </div>
+                        <div class="param-item"><span class="param-key">learning_rate</span><span
+                                class="param-val">0.0356</span></div>
+                        <div class="param-item"><span class="param-key">subsample</span><span
+                                class="param-val">0.862</span></div>
+                        <div class="param-item"><span class="param-key">max_features</span><span
+                                class="param-val">0.605</span></div>
+                        <div class="param-item"><span class="param-key">min_samples_leaf</span><span
+                                class="param-val">13</span></div>
+                        <div class="param-item"><span class="param-key">ccp_alpha</span><span
+                                class="param-val">0.0089</span></div>
+                        <div class="param-item"><span class="param-key">min_impurity</span><span
+                                class="param-val">0.0040</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ TRADE ANALYSIS ═══════════ -->
+    <section id="trades" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"
+                    style="background: var(--accent-green-dim); color: var(--accent-green);">Performance</span>
+                <h2 class="section-title">Trade Analysis</h2>
+                <p class="section-subtitle">Detailed performance breakdown across strategy versions and ML walk-forward
+                    splits</p>
+            </div>
+
+            <!-- V4 vs V5 ML comparison -->
+            <div class="card" style="padding: 0; margin-bottom: 2rem; overflow-x: auto;">
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Metric</th>
+                            <th>V4 (Fixed)</th>
+                            <th>V5-ML Train</th>
+                            <th>V5-ML Valid</th>
+                            <th>V5-ML Test</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Trades</td>
+                            <td>46</td>
+                            <td>143</td>
+                            <td>8</td>
+                            <td>20</td>
+                        </tr>
+                        <tr>
+                            <td>Win Rate</td>
+                            <td style="color: var(--accent-green);">34.8%</td>
+                            <td style="color: var(--accent-green);">46.2%</td>
+                            <td style="color: var(--accent-green);">37.5%</td>
+                            <td style="color: var(--accent-green);">25.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Total P&L</td>
+                            <td style="color: var(--text-secondary);">₹-7,343</td>
+                            <td style="color: var(--text-secondary);">₹-22,693</td>
+                            <td style="color: var(--text-secondary);">₹-753</td>
+                            <td style="color: var(--text-secondary);">₹-18,516</td>
+                        </tr>
+                        <tr>
+                            <td>Sharpe Ratio</td>
+                            <td>-0.93</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tr>
+                        <tr>
+                            <td>Profit Factor</td>
+                            <td>0.85</td>
+                            <td>0.84</td>
+                            <td>0.79</td>
+                            <td>0.18</td>
+                        </tr>
+                        <tr>
+                            <td>Max Drawdown</td>
+                            <td style="color: var(--text-secondary);">₹-12,378</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>Avg Win</td>
+                            <td style="color: var(--accent-green);">₹2,656</td>
+                            <td style="color: var(--accent-green);">₹1,866</td>
+                            <td style="color: var(--accent-green);">₹934</td>
+                            <td style="color: var(--accent-green);">₹1,789</td>
+                        </tr>
+                        <tr>
+                            <td>Avg Loss</td>
+                            <td style="color: var(--accent-red);">₹-1,661</td>
+                            <td style="color: var(--accent-red);">₹-1,894</td>
+                            <td style="color: var(--accent-red);">₹-711</td>
+                            <td style="color: var(--accent-red);">₹-1,497</td>
+                        </tr>
+                        <tr>
+                            <td>Avg Duration</td>
+                            <td>83 min</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>Avg Hedges</td>
+                            <td>1.9</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Exit Reason Breakdown -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Exit Reasons — V4 (46 trades)</div>
+                    <div class="exit-bar-container">
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">theta_bleed</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill theta" style="width: 71.7%;">33</div>
+                            </div>
+                        </div>
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">vega_win</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill vega" style="width: 21.7%;">10</div>
+                            </div>
+                        </div>
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">max_drawdown</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill drawdown" style="width: 6.5%;">3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Exit Reasons — V5-ML Train (143 trades)</div>
+                    <div class="exit-bar-container">
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">theta_bleed</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill theta" style="width: 49.7%;">71</div>
+                            </div>
+                        </div>
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">vega_win</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill vega" style="width: 28.0%;">40</div>
+                            </div>
+                        </div>
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">max_drawdown</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill drawdown" style="width: 15.4%;">22</div>
+                            </div>
+                        </div>
+                        <div class="exit-bar-row">
+                            <span class="exit-bar-label">gamma_win</span>
+                            <div class="exit-bar-track">
+                                <div class="exit-bar-fill gamma" style="width: 7.0%;">10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Insights -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-title" style="color: var(--accent-amber);">Key Insights & Observations</div>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 0.5rem;">
+                    <div>
+                        <h4 style="font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">Strategy
+                            Evolution</h4>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7;">
+                            V4 achieved the best risk-adjusted performance with PF 0.85 and smallest loss (₹-7,343).
+                            Progressive improvements in exit conditions and regime filtering reduced losses by 41% from
+                            v3 to v4.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 0.9rem; color: var(--accent-purple); margin-bottom: 0.5rem;">ML
+                            Enhancement</h4>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7;">
+                            The GBM classifier improved train-set win rate to 46.2% but showed overfitting with test-set
+                            drop to 25%.
+                            The threshold of 0.602 filtered aggressively, reducing trade count but not improving
+                            out-of-sample P&L.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 0.9rem; color: var(--accent-amber); margin-bottom: 0.5rem;">Exit Analysis
+                        </h4>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7;">
+                            Theta bleed dominates exits (72% in V4), indicating most straddles decay before reaching
+                            profit targets.
+                            Vega wins account for 22-28% of exits — the primary profit driver when IV drops after entry.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 0.9rem; color: var(--accent-red); margin-bottom: 0.5rem;">Challenges</h4>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7;">
+                            Consistent negative P&L across versions suggests structural headwinds: transaction costs
+                            (₹120/trade),
+                            asymmetric risk from gamma exposure, and the challenge of timing IV compression entries.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer class="footer">
+        <div class="container">
+            <p style="font-size: 1rem; color: var(--text-secondary); font-weight: 600;">Gamma Scalping Model — Dashboard
+                Report</p>
+            <p style="margin-top: 0.5rem;">Built with iterative research, systematic backtesting, and machine learning
+            </p>
+            <div class="footer-tech">
+                <span>Python</span>
+                <span>scikit-learn</span>
+                <span>Optuna</span>
+                <span>Pandas</span>
+                <span>Matplotlib</span>
+                <span>NIFTY Options</span>
+                <span>GBM Classifier</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+1. When the days to expiry<2, we shift to the next expiry straddle to avoid the theta that we pay.
+2. Use a hybrid strategy which uses 3-min data to decide hedges (0,3,6,9..) and use 1-min data to not miss stop losses or price spikes which could happen in higher time frames
+3. clean the data by removing ATM+-4 to ATM+-10 which are never actually being used.
+4. add a regime classifier as trendy days, we might profit from straddle and on choppy days from hedge. apply kaufman's efficiency ratio
+5. for hedges i want to buy options only and not futures. i dont have any kind of futures data. eg: Nifty is @25000 we buy 25000PE and 25000CE for straddle. when nifty goes 25050 we buy 25050PE(ATM but ATM+1 from initial 25000) and when nifty comes back 25000 we square off the option.
+6. # --- Current straddle value ---
+straddle_ret = (straddle_now / t['entry_straddle']) - 1.0
+
+# --- Check exits ---
+if straddle_ret >= STRADDLE_TP_PCT:
+    exit_reason = 'take_profit'
+elif straddle_ret <= -STRADDLE_SL_PCT:
+    exit_reason = 'stop_loss'
+elif iv_ratio >= 1.05: # Changed from 1.30 to a realistic 5% move
+    exit_reason = 'iv_expand'
+7. do set SL and TP for the hedges also because example: holding a hedged PE which was bought at 25050 even when nifty reaches 25100 is pointless. these SL and TP should be based on spot nifty and should be dynamic based on ATR i guess or any other idea and not too tight
+
+expiry thurday tuesday
+
+8.⁠ ⁠can i have one more implementation that risk to reward ratio is also a hyperparameter which can be tuned. for example if i get better probability of profit with 0.5 ratio than 0.3 ratio then i can tune it to value 0.5.
+9.⁠ ⁠Profit=(Hedge Revenue−Trading Costs)−Theta Decay>0
+this equation i want that if i reach 5% or 8% of the capital deployed in the hedge, then i take the profit, and this % is also to be tuned according to what is the average % profit i can take most of the times. and this logic is to be applied for each hedge, basically defining a TP for hedges
+10.⁠ ⁠6 essential exit and target reasons you should implement:
+the gamma win: Logic: straddle_now >= entry_price * 1.15 (15% Profit).
+the vega win: Logic: current_iv >= entry_iv * 1.05 (5% IV expansion).
+the IV crush: Logic: current_iv <= entry_iv * 0.95 (5% IV drop).
+the theta bleed: Logic: if time_since_entry > 120 mins AND straddle_pnl < 0.
+max drawdown: Logic: straddle_now <= entry_price * 0.85 (15% Loss).
+the force close(EOD)

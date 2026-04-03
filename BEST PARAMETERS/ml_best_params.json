@@ -1,0 +1,14 @@
+{
+  "cv_score": 0.4008849795964354,
+  "threshold": 0.601569758602242,
+  "best_params": {
+    "ccp_alpha": 6.485789479392705e-06,
+    "learning_rate": 0.22338289670454853,
+    "max_depth": 5,
+    "max_features": 0.48406790545987155,
+    "min_impurity_decrease": 0.0016309362758889201,
+    "min_samples_leaf": 63,
+    "n_estimators": 876,
+    "subsample": 0.8999276279736577
+  }
+}
