@@ -24,7 +24,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Disclaimer](#disclaimer)
 
 ---
 
@@ -303,7 +302,6 @@ results = run_ml_pipeline(
     seed             = 42,
 )
 
-# Access results
 model     = results['model']
 threshold = results['threshold']
 test_pnl  = results['test_trades']['realized_pnl'].sum()
@@ -327,41 +325,34 @@ results = run_ml_pipeline(
 ## Project Structure
 
 ```
-Gamma-Scalping-Algorithmic-Trading-Engine/
-│
-├── gamma_engine_v4.py        # v4 baseline engine (Optuna-tuned params)
-├── gamma_ml_v5.py            # v5 ML pipeline (GBM + 12-3-3 walk-forward)
-│
-├── data/
-│   └── 1MIN/                 # Place NIFTY_part_1.csv … NIFTY_part_7.csv here
-│
-├── output/
-│   ├── v4/
-│   │   ├── trades_v4.csv
-│   │   └── backtest_v4.png
-│   └── ml/
-│       ├── ml_trades_v5.csv
-│       ├── ml_best_params.json
-│       ├── gbm_model.pkl
-│       └── ml_backtest_v5.png
-│
-├── docs/
-│   ├── gamma_ml_v5_explainer.docx   # Section-by-section technical explainer
-│   └── gamma_version_evolution.docx # v1→v5 bug & fix history
-│
-├── requirements.txt
-└── README.md
+GAMMA-SCALPING-ALGORITHMIC-TRADING-ENGINE/
+├── BACKTEST RESULTS/
+│   ├── backtest_v1.png
+│   ├── backtest_v2.png
+│   ├── backtest_v3.png
+│   ├── backtest_v4.png
+│   ├── backtest_v5.png
+│   └── ml_backtest_v5.png
+├── BEST PARAMETERS/
+│   ├── finance_best_params.json
+│   └── ml_best_params.json
+├── DATA/
+│   ├── 1MIN/
+│   ├── 3MIN/
+│   └── 5MIN/
+├── EDA/
+│   ├── eda_report_1.png
+│   ├── eda_report_2.png
+│   └── eda_report.png
+├── OPTUNA RESULTS/
+├── TRADE LOGS/
+│   ├── trade_logs_v4.csv
+│   └── trade_logs_v5_ml.csv
+├── .gitattributes
+├── README.md
+├── report.html
+├── Round_2_Final.ipynb
+└── strat.txt
 ```
 
 ---
-
-## Disclaimer
-
-This project is for **research and educational purposes only**. Nothing in this
-repository constitutes financial advice. Past backtested performance does not
-guarantee future results. Options trading involves substantial risk of loss.
-Always consult a registered financial advisor before trading.
-
----
-
-*Built on 18 months of Nifty50 options data · 5 engine versions · 12 bugs found and fixed*
