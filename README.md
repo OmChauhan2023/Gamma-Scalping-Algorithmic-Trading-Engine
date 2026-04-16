@@ -4,8 +4,6 @@
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-GBM%20Classifier-F7931E?style=flat&logo=scikitlearn&logoColor=white)
 ![Optuna](https://img.shields.io/badge/Optuna-HPT%20Tuning-6C63FF?style=flat)
 ![Data](https://img.shields.io/badge/Data-2M%2B%20rows-0D6E6E?style=flat)
-![Status](https://img.shields.io/badge/Status-Research-orange?style=flat)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
 > **An end-to-end algorithmic options trading engine for Nifty50 weekly expiry,
 > combining gamma scalping via ATM straddles with an ML signal filter trained
@@ -39,8 +37,8 @@ volatility is cheap relative to realised volatility, capture directional moves
 through delta-hedging, and filter entry signals with a Gradient Boosting
 Machine (GBM) classifier.
 
-The engine went through **5 major versions** — each iteration uncovering and
-fixing a deeper category of bug — before arriving at the final ML-enhanced
+The engine went through **5 major versions**  each iteration uncovering and
+fixing a deeper category of bug before arriving at the final ML-enhanced
 pipeline.
 
 ---
@@ -56,7 +54,7 @@ Gamma P&L = 0.5 × Γ × (σ_realised² − σ_implied²) × S² × dt
 1. **Buy ATM straddle** (CE + PE at the nearest 50-pt strike to spot)
    when IV Rank < 50 and IV/RV < 1.037
 2. **Delta-hedge** every time spot moves ≥ 51 points from the last hedge
-   level — buy PUT on up-moves, buy CALL on down-moves
+   level buy PUT on up-moves, buy CALL on down-moves
 3. **Close hedge** when spot reverts within 41 points (captures the
    gamma round-trip)
 4. **Exit straddle** on one of five triggers:
@@ -136,11 +134,11 @@ Gamma P&L = 0.5 × Γ × (σ_realised² − σ_implied²) × S² × dt
 
 | Version | Trades | Total P&L | Sharpe | Key Flaw Fixed |
 |---------|--------|-----------|--------|----------------|
-| v1 | — | — | — | Concept only — no implementation |
+| v1 | 224 | −₹787,883 | -6.44 | Concept only — no implementation |
 | v2 | 135 | −₹21,341 | −2.67 | First engine; hedge silent failure; iv_crush bug |
 | v3 | 18 | −₹10,301 | −7.29 | Datetime mismatch; over-filtered (18 trades) |
-| v4 | 156 | −₹176,039 | −7.94 | Inverted hedge direction; 22-min RV vs daily IV |
-| v5-ML | — | Pipeline complete | — | BS gamma hedge; daily RV; ML gate |
+| v4 | 156 | −₹7,343 | −0.93 | Inverted hedge direction; 22-min RV vs daily IV |
+| v5-ML | 239 | Pipeline complete | — | BS gamma hedge; daily RV; ML gate |
 
 ### Bug History
 
@@ -196,8 +194,7 @@ param_space = {
     'min_impurity_decrease': loguniform(1e-6, 5e-3),
     'ccp_alpha'            : loguniform(1e-6, 5e-3),
 }
-# 200-iteration RandomizedSearchCV  ×  StratifiedKFold(n_splits=5, shuffle=False)
-# Scoring: average_precision  (robust to class imbalance)
+
 ```
 
 ---
@@ -232,8 +229,6 @@ param_space = {
 | Strikes | ATM ± 2 (strike_offset filter) |
 | Option types | CALL, PUT |
 | Columns | datetime, open, high, low, close, iv, spot, volume, oi, option_type, strike_offset |
-
-> Data not included in this repository. Place CSV files in `data/1MIN/`.
 
 ---
 
