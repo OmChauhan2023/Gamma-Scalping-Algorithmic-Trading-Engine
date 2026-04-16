@@ -137,7 +137,7 @@ Gamma P&L = 0.5 × Γ × (σ_realised² − σ_implied²) × S² × dt
 | v1 | 224 | −₹787,883 | -6.44 | Concept only — no implementation |
 | v2 | 135 | −₹21,341 | −2.67 | First engine; hedge silent failure; iv_crush bug |
 | v3 | 18 | −₹10,301 | −7.29 | Datetime mismatch; over-filtered (18 trades) |
-| v4 | 156 | −₹7,343 | −0.93 | Inverted hedge direction; 22-min RV vs daily IV |
+| v4 | 46 | −₹7,343 | −0.93 | Inverted hedge direction; 22-min RV vs daily IV |
 | v5-ML | 239 | Pipeline complete | — | BS gamma hedge; daily RV; ML gate |
 
 ### Bug History
@@ -238,13 +238,13 @@ param_space = {
 
 | Metric | Value |
 |--------|-------|
-| Trades | 156 |
-| Win Rate | 42.9% |
-| Total P&L | −₹1,76,039 |
-| Profit Factor | 0.33 |
-| Sharpe | −7.94 |
-| Max Drawdown | −₹1,76,887 |
-| Avg Hedges/Trade | 2.1 |
+| Trades | 46 |
+| Win Rate | 34.8% |
+| Total P&L | −₹7,343 |
+| Profit Factor | 0.85 |
+| Sharpe | −0.93 |
+| Max Drawdown | −₹12,378 |
+| Avg Hedges/Trade | 1.9 |
 
 ### v5-ML (with GBM gate)
 
